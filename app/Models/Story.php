@@ -7,5 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Story extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'hn_id',
+        'by',
+        'title',
+        'type',
+        'url',
+        'score',
+        'descendants',
+        'kids',
+        'time',
+    ];
 }

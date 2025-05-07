@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Http;
+use App\Models\Story;
+use Carbon\Carbon;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +15,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/fetch-story', function () {
+    $data = Http::get('https://hacker-news.firebaseio.com/v0/item/8863.json')->json();
+
+    Story::updateOrCreate(
+        ['hn_id' => $data['id']],
+        [
+            'by' => $data['by'],
+            'title' => $data['title'],
+            'type' => $data['type'],
+            'url' => $data['url'] ?? null,
+            'score' => $data['score'] ?? null,
+            'descendants' => $data['descendants'] ?? null,
+            'kids' => isset($data['kids']) ? json_encode($data['kids']) : null,
+            'time' => Carbon::createFromTimestamp($data['time']),
+        ]
+    );
+
+    return 'Story saved to database.';
 });
